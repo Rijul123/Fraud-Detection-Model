@@ -1,4 +1,4 @@
-# Fraud Detection Pipeline Report
+# Fraud Detection Pipeline 
 
 Objectives, methods, results, and recommendations for an end-to-end fraud detection pipeline.
 
