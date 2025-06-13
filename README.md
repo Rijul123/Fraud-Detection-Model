@@ -1,46 +1,83 @@
-# Fraud-Detection-Analysis
+# Fraud Detection Pipeline Report
 
+Objectives, methods, results, and recommendations for an end-to-end fraud detection pipeline.
 
-Objective & ScopeThe goal of this project is to detect fraudulent transactions within a large dataset of financial records. We define the problem as a binary classification task:
-Positive class (fraud): Transactions labeled as fraudulent.
-Negative class (legitimate): All other transactions.
-The dataset consists of 1,048,575 transactions, with only 1,142 fraud cases (0.1% prevalence). We must address severe class imbalance and aim to maximize detection (recall) while controlling false positive rates.
-MethodologyData Loading & Cleaning
-Read raw data from CSV using pandas.
-Handle missing values and standardize numeric features.
-Train/Test Split
-Stratified split: 80% training, 10% validation, 10% testing (train_test_split with stratify).
-Class Imbalance Handling
-SMOTE Oversampling: Synthetic Minority Over-sampling Technique to boost minority class samples in training data.
-NearMiss Undersampling: Reduce majority class samples by selecting those closest to minority instances.
-Model Selection & Training
-Random Forest Classifier (100 trees, default settings).
-Logistic Regression (L2 penalty, balanced class weights).
-Each model trained on (a) original data, (b) SMOTE-oversampled data, (c) NearMiss-undersampled data.
-Evaluation Metrics
-Accuracy, Precision, Recall, F1 Score.
-ROC Curve & AUC.
-Confusion Matrix visualization.
-Results & AnalysisBaseline (No Resampling)
-Random Forest: Accuracy 99.97%, Recall 75.6%, Precision 84.2%, F1 0.854.
-Logistic Regression: Accuracy 99.93%, Recall 92.3%, Precision 2.8%, F1 0.055.
-SMOTE Oversampling
-Random Forest: Recall improved to 83.4%, Precision dropped to 53.5% (more false positives).
-Logistic Regression: Recall 95.1%, Precision 3.4%, F1 0.065.
-NearMiss Undersampling
-Random Forest: Recall 100%, Precision 0.7%, F1 0.014 (too many false positives).
-Logistic Regression: Recall 100%, Precision 0.4%, F1 0.008.
-ROC AUC
-Random Forest consistently achieved AUC > 0.99 across all scenarios.
-Logistic Regression AUC ~0.85 without resampling, dropping slightly when resampled.
-Confusion Matrices
-SMOTE reduced false negatives but increased false positives notably.
-NearMiss eliminated false negatives but produced overwhelming false positives.
-Conclusions & RecommendationsBest Model: Random Forest with SMOTE oversampling balances detection ability and manageable false positives. It achieves a good tradeoff with Recall ~83% and Precision ~53%.
-Logistic Regression performs poorly on precision despite high recall, making it unsuitable for deployment.
-Undersampling leads to impractical false positive rates.
-Recommended Next Steps:
-Integrate threshold tuning (e.g., adjust classification threshold) to further balance precision/recall.
-Explore ensemble methods combining multiple classifiers.
-Investigate feature engineering to improve separability.
-Deploy pipeline as a modular package, incorporate parameter configuration and logging.
+---
+
+## 📑 Table of Contents
+
+1. [Objective & Scope](#objective--scope)
+2. [Methodology](#methodology)
+3. [Results & Analysis](#results--analysis)
+4. [Conclusions & Recommendations](#conclusions--recommendations)
+
+---
+
+## 🧐 Objective & Scope
+
+- **Problem:** Identify fraudulent transactions among 1,048,575 records.
+- **Classes:**
+  - **Fraudulent (positive):** 1,142 cases (0.1%).
+  - **Legitimate (negative):** All other transactions.
+- **Goal:** Maximize recall (detect as many frauds as possible) while controlling false positives.
+
+---
+
+## 🛠️ Methodology
+
+1. **Data Loading & Cleaning**
+   - Import CSV data with `pandas`.
+   - Handle missing values and normalize numerical features.
+
+2. **Train/Validation/Test Split**
+   - Stratified split: 80% train, 10% validation, 10% test.
+
+3. **Class Imbalance Handling**
+   - **SMOTE Oversampling:** Generate synthetic minority samples.
+   - **NearMiss Undersampling:** Select nearest majority samples to balance classes.
+
+4. **Model Training**
+   - **Random Forest Classifier** (100 trees).
+   - **Logistic Regression** (L2 penalty, class weights balanced).
+   - Trained under three scenarios: original data, SMOTE, NearMiss.
+
+5. **Evaluation Metrics**
+   - **Accuracy**, **Precision**, **Recall**, **F1 Score**.
+   - **ROC Curve** & **AUC**.
+   - **Confusion Matrix** visualizations.
+
+---
+
+## 📊 Results & Analysis
+
+| Scenario             | Model             | Accuracy | Recall  | Precision | F1 Score |
+|----------------------|-------------------|----------|---------|-----------|----------|
+| No Resampling        | Random Forest     | 99.97%   | 75.6%   | 84.2%     | 0.854    |
+|                      | Logistic Reg.     | 99.93%   | 92.3%   | 2.8%      | 0.055    |
+| SMOTE Oversampling   | Random Forest     | 99.95%   | 83.4%   | 53.5%     | 0.647    |
+|                      | Logistic Reg.     | 99.90%   | 95.1%   | 3.4%      | 0.065    |
+| NearMiss Undersampling | Random Forest   | 99.30%   | 100%    | 0.7%      | 0.014    |
+|                      | Logistic Reg.     | 99.10%   | 100%    | 0.4%      | 0.008    |
+
+- **ROC AUC:** RF > 0.99; LR ~ 0.85.
+- **Confusion Matrices:** SMOTE reduces false negatives; NearMiss eliminates false negatives but floods false positives.
+
+---
+
+## 💡 Conclusions & Recommendations
+
+- **Recommended Model:** Random Forest + SMOTE—best balance of recall (~83%) and precision (~53%).
+- **Logistic Regression:** High recall but unacceptable precision (<5%).
+- **NearMiss Undersampling:** Eliminates missed fraud but unmanageable false positives.
+
+### Next Steps
+
+- **Threshold Optimization:** Adjust classification thresholds to tune precision/recall.
+- **Ensemble Methods:** Combine multiple models for robust predictions.
+- **Feature Engineering:** Derive new features to improve separability.
+- **Pipeline Packaging:** Modularize script, add configuration files, logging, and unit tests.
+
+---
+
+_End of report contents._
+
