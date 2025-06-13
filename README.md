@@ -1,100 +1,46 @@
-# Fraud-Detection-Pipeline
+# Fraud-Detection-Analysis
 
 
-This repository implements a simple end-to-end fraud detection workflow: data loading, class balancing, model training, and evaluation.
-
-## 📂 Repository Structure
-
-```
-.
-├── fraud_detection_pipeline.py    # Main script
-├── data/
-│   └── transactions.csv           # Raw input data (example)
-├── notebooks/
-│   └── EDA_and_visualization.ipynb  # (Optional) exploratory analysis
-├── outputs/
-│   ├── confusion_matrix.png
-│   └── roc_curve.png
-├── .env                           # (not tracked) API keys or secrets
-├── .gitignore
-├── requirements.txt
-└── README.md
-```
-
-## 🔧 Prerequisites
-
-- Python 3.8+  
-- pip (or conda)
-
-## 📥 Installation
-
-1. **Clone the repo**  
-   ```bash
-   git clone https://github.com/yourusername/fraud-detection-pipeline.git
-   cd fraud-detection-pipeline
-   ```
-
-2. **Create & activate a virtual environment**  
-   ```bash
-   python -m venv venv
-   source venv/bin/activate       # macOS/Linux
-   venv\Scripts\activate        # Windows
-   ```
-
-3. **Install dependencies**  
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-## ⚙️ Configuration
-
-1. **.env file**  
-   Create a file named `.env` in the project root with any secrets or paths you need.  
-   ```env
-   DATA_PATH=./data/transactions.csv
-   ```
-
-2. **.gitignore**  
-   Ensure your `.gitignore` contains at least:  
-   ```
-   venv/
-   __pycache__/
-   .env
-   outputs/
-   ```
-
-## 🚀 Usage
-
-Run the pipeline script end-to-end:
-
-```bash
-python fraud_detection_pipeline.py   --data-path "$DATA_PATH"   --output-dir ./outputs   --test-size 0.2   --random-state 42
-```
-
-| Option           | Description                                                       | Default   |
-| ---------------- | ----------------------------------------------------------------- | --------- |
-| `--data-path`    | Path to the CSV file containing raw transactions                  | `./data/transactions.csv` |
-| `--output-dir`   | Directory to save plots and metrics                               | `./outputs` |
-| `--test-size`    | Fraction of data held out for testing                             | `0.2`     |
-| `--random-state` | Seed for reproducibility                                          | `42`      |
-
-After running, you’ll find:
-
-- **`confusion_matrix.png`**  
-- **`roc_curve.png`**  
-
-in the `./outputs` folder.
-
-## 📈 What’s Inside
-
-- **Data Loading & Cleaning**  
-- **Train/Test Split** with stratification  
-- **Class Balancing**: SMOTE & NearMiss  
-- **Model Training**: RandomForest & LogisticRegression  
-- **Evaluation**: F1 score, ROC curve, confusion matrix  
-
-## 🛠️ Extending
-
-- Swap in a different classifier by editing the `models` list.  
-- Add hyperparameter tuning with GridSearchCV.  
-- Turn script into a Python module or package for import.
+Objective & ScopeThe goal of this project is to detect fraudulent transactions within a large dataset of financial records. We define the problem as a binary classification task:
+Positive class (fraud): Transactions labeled as fraudulent.
+Negative class (legitimate): All other transactions.
+The dataset consists of 1,048,575 transactions, with only 1,142 fraud cases (0.1% prevalence). We must address severe class imbalance and aim to maximize detection (recall) while controlling false positive rates.
+MethodologyData Loading & Cleaning
+Read raw data from CSV using pandas.
+Handle missing values and standardize numeric features.
+Train/Test Split
+Stratified split: 80% training, 10% validation, 10% testing (train_test_split with stratify).
+Class Imbalance Handling
+SMOTE Oversampling: Synthetic Minority Over-sampling Technique to boost minority class samples in training data.
+NearMiss Undersampling: Reduce majority class samples by selecting those closest to minority instances.
+Model Selection & Training
+Random Forest Classifier (100 trees, default settings).
+Logistic Regression (L2 penalty, balanced class weights).
+Each model trained on (a) original data, (b) SMOTE-oversampled data, (c) NearMiss-undersampled data.
+Evaluation Metrics
+Accuracy, Precision, Recall, F1 Score.
+ROC Curve & AUC.
+Confusion Matrix visualization.
+Results & AnalysisBaseline (No Resampling)
+Random Forest: Accuracy 99.97%, Recall 75.6%, Precision 84.2%, F1 0.854.
+Logistic Regression: Accuracy 99.93%, Recall 92.3%, Precision 2.8%, F1 0.055.
+SMOTE Oversampling
+Random Forest: Recall improved to 83.4%, Precision dropped to 53.5% (more false positives).
+Logistic Regression: Recall 95.1%, Precision 3.4%, F1 0.065.
+NearMiss Undersampling
+Random Forest: Recall 100%, Precision 0.7%, F1 0.014 (too many false positives).
+Logistic Regression: Recall 100%, Precision 0.4%, F1 0.008.
+ROC AUC
+Random Forest consistently achieved AUC > 0.99 across all scenarios.
+Logistic Regression AUC ~0.85 without resampling, dropping slightly when resampled.
+Confusion Matrices
+SMOTE reduced false negatives but increased false positives notably.
+NearMiss eliminated false negatives but produced overwhelming false positives.
+Conclusions & RecommendationsBest Model: Random Forest with SMOTE oversampling balances detection ability and manageable false positives. It achieves a good tradeoff with Recall ~83% and Precision ~53%.
+Logistic Regression performs poorly on precision despite high recall, making it unsuitable for deployment.
+Undersampling leads to impractical false positive rates.
+Recommended Next Steps:
+Integrate threshold tuning (e.g., adjust classification threshold) to further balance precision/recall.
+Explore ensemble methods combining multiple classifiers.
+Investigate feature engineering to improve separability.
+Deploy pipeline as a modular package, incorporate parameter configuration and logging.
